@@ -13,14 +13,14 @@ void setup() {
 	Serial.begin(115200);
 
 	// Make your own timers and add them to the group
-	timer_group.addTimer(&t1000);
+	timer_group.AddTimer(&t1000);
 	// Or just add them directly as part of the group
-	timer_group.addTimer(10U, run10ms);
-	timer_group.addTimer(250U, run250ms);
+	timer_group.AddTimer(10U, run10ms);
+	timer_group.AddTimer(250U, run250ms);
 }
 
 void loop() {
-	if (timer_group.tick(millis()) == false)
+	if (timer_group.Tick(millis()) == false)
 	{
 		// The time between one tick and the next exceeded the timer for the shortest task 
 		Serial.println("Timing Violation");

@@ -40,12 +40,12 @@ class VirtualTimer
 		/********** PROTOTYPES **********/
 		VirtualTimer ();
 		VirtualTimer (uint32_t duration_ms, void (*task_func)(void), Type timer_type);
-		void init (uint32_t duration_ms, void (*task_func)(void), Type timer_type);
-		void start (uint32_t current_time);
-		State getTimerState ();
-		bool hasTimerExpired (uint32_t current_time);
-		uint32_t getElapsedTime (uint32_t current_time);
-		bool tick (uint32_t current_time);
+		void Init (uint32_t duration_ms, void (*task_func)(void), Type timer_type);
+		void Start (uint32_t current_time);
+		State GetTimerState ();
+		bool HasTimerExpired ();
+		uint32_t GetElapsedTime (uint32_t current_time);
+		bool Tick (uint32_t current_time);
 
 		/********** VARIABLES **********/
 		uint32_t duration;
@@ -64,9 +64,9 @@ class VirtualTimerGroup
 	public:
 		/********** PROTOTYPES **********/
 		VirtualTimerGroup ();
-		void addTimer (VirtualTimer* new_timer);
-		void addTimer (uint32_t duration_ms, void(*task_func)(void));
-		bool tick (uint32_t current_time);
+		void AddTimer (VirtualTimer* new_timer);
+		void AddTimer (uint32_t duration_ms, void(*task_func)(void));
+		bool Tick (uint32_t current_time);
 
 	private:
 		uint32_t prev_tick = 0U;

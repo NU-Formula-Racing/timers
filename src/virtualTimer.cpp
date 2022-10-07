@@ -46,7 +46,7 @@ VirtualTimer::VirtualTimer(uint32_t duration_ms, void (*task_func)(void), Type t
  * @param task_func - Function to be called when timer expires 
  * @param timer_type - If the timer should be repeating or single-use 
  */
-void VirtualTimer::init(uint32_t duration_ms, void (*task_func)(void), Type timer_type)
+void VirtualTimer::Init(uint32_t duration_ms, void (*task_func)(void), Type timer_type)
 {
     if (duration_ms != 0U)
     {
@@ -61,7 +61,7 @@ void VirtualTimer::init(uint32_t duration_ms, void (*task_func)(void), Type time
  * 
  * @param current_time - the current time in ms at the time of calling (eg. millis())
  */
-void VirtualTimer::start(uint32_t current_time)
+void VirtualTimer::Start(uint32_t current_time)
 {
     state = State::kRunning;
     prev_tick = current_time;
@@ -73,7 +73,7 @@ void VirtualTimer::start(uint32_t current_time)
  * @param current_time - the current time in ms at the time of calling (eg. millis())
  * @return Current state of the timer
  */
-VirtualTimer::State VirtualTimer::getTimerState()
+VirtualTimer::State VirtualTimer::GetTimerState()
 {
     return state;
 }
@@ -85,10 +85,10 @@ VirtualTimer::State VirtualTimer::getTimerState()
  * @return true = timer has exceeded duration 
  * @return false = timer has not exceeded duration 
  */
-bool VirtualTimer::hasTimerExpired(uint32_t current_time)
+bool VirtualTimer::HasTimerExpired()
 {
     bool ret = false;
-    if (getTimerState() == State::kExpired)
+    if (GetTimerState() == State::kExpired)
     {
         ret = true;
     }
@@ -101,7 +101,7 @@ bool VirtualTimer::hasTimerExpired(uint32_t current_time)
  * @param current_time - the current time in ms at the time of calling (eg. millis())
  * @return Elapsed time since timer was started 
  */
-uint32_t VirtualTimer::getElapsedTime(uint32_t current_time)
+uint32_t VirtualTimer::GetElapsedTime(uint32_t current_time)
 {
     uint32_t ret = current_time - prev_tick;
     return ret;
@@ -114,7 +114,7 @@ uint32_t VirtualTimer::getElapsedTime(uint32_t current_time)
  * @return true if the function returned faster than the timer duration 
  * @return false if the function pointer is null or task missed an iteration
  */
-bool VirtualTimer::tick(uint32_t current_time)
+bool VirtualTimer::Tick(uint32_t current_time)
 {
     bool ret = true;
 
@@ -169,7 +169,7 @@ VirtualTimerGroup::VirtualTimerGroup()
  * 
  * @param newTimer = existig timer to be added to the group
  */
-void VirtualTimerGroup::addTimer(VirtualTimer* new_timer)
+void VirtualTimerGroup::AddTimer(VirtualTimer* new_timer)
 {
     if (timer_group.empty())
     {
@@ -191,11 +191,11 @@ void VirtualTimerGroup::addTimer(VirtualTimer* new_timer)
  * @return true = timer was added successfully 
  * @return false = failed to add timer (likely reached the max number of timers)
  */
-void VirtualTimerGroup::addTimer(uint32_t duration_ms, void(*task_func)(void))
+void VirtualTimerGroup::AddTimer(uint32_t duration_ms, void(*task_func)(void))
 {
     VirtualTimer* new_timer = new VirtualTimer;
 
-    new_timer->init(duration_ms, task_func, VirtualTimer::Type::kRepeating);
+    new_timer->Init(duration_ms, task_func, VirtualTimer::Type::kRepeating);
 
     if (timer_group.empty())
     {
@@ -216,7 +216,7 @@ void VirtualTimerGroup::addTimer(uint32_t duration_ms, void(*task_func)(void))
  * @return false if the task loop took longer than the minimum timer duration 
  * 			(timers may no longer fire at the correct interval)
  */
-bool VirtualTimerGroup::tick(uint32_t current_time)
+bool VirtualTimerGroup::Tick(uint32_t current_time)
 {
     bool ret = true;
 
@@ -231,12 +231,12 @@ bool VirtualTimerGroup::tick(uint32_t current_time)
         std::vector<VirtualTimer>::iterator i; 
         for (i = timer_group.begin(); i != timer_group.end(); i++)
         {
-            if (i->getTimerState() != VirtualTimer::State::kRunning)
+            if (i->GetTimerState() != VirtualTimer::State::kRunning)
             {
-                i->start(current_time);
+                i->Start(current_time);
             }
             
-            if (i->tick(current_time) == false)
+            if (i->Tick(current_time) == false)
             {
                 ret = false;
             }
