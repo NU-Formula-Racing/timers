@@ -192,7 +192,7 @@ void VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)>
         min_timer_duration = duration_ms;
     }
 
-    timer_group.push_back(VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
+    timer_group.emplace_back(VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
 }
 
 /**
