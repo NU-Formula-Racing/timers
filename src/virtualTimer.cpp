@@ -1,33 +1,33 @@
 /**
  * @file virtualTimer.cpp
  * @author Chris Uustal
- * @brief Defines some of then longer functions declared in the virtualTimer.h file 
+ * @brief Defines some of then longer functions declared in the virtualTimer.h file
  * @version 1
  * @date 2022-09-28
- * 
+ *
  * @copyright Copyright (c) 2022
- * 
+ *
  */
 
 #include "virtualTimer.h"
 
 /**
- * @brief Default constructor for VirtualTimer object 
- * 
+ * @brief Default constructor for VirtualTimer object
+ *
  */
 VirtualTimer::VirtualTimer()
 {
     duration = 0U;
-    task_func = NULL;
+    task_func = nullptr;
     type = Type::kUninitialized;
 }
 
 /**
  * @brief Construct a new Virtual Timer:: Virtual Timer object
- * 
+ *
  * @param duration_ms - Duration the timer should fire after
- * @param task_func - Function to be called when timer expires 
- * @param timer_type - If the timer should be repeating or single-use 
+ * @param task_func - Function to be called when timer expires
+ * @param timer_type - If the timer should be repeating or single-use
  */
 VirtualTimer::VirtualTimer(uint32_t duration_ms, void (*task_func)(void), Type timer_type)
 {
@@ -40,11 +40,11 @@ VirtualTimer::VirtualTimer(uint32_t duration_ms, void (*task_func)(void), Type t
 }
 
 /**
- * @brief Constructor duplicate for times when we can't use a parametrized constructor 
- * 
+ * @brief Constructor duplicate for times when we can't use a parametrized constructor
+ *
  * @param duration_ms - Duration the timer should fire after
- * @param task_func - Function to be called when timer expires 
- * @param timer_type - If the timer should be repeating or single-use 
+ * @param task_func - Function to be called when timer expires
+ * @param timer_type - If the timer should be repeating or single-use
  */
 void VirtualTimer::Init(uint32_t duration_ms, void (*task_func)(void), Type timer_type)
 {
@@ -57,8 +57,8 @@ void VirtualTimer::Init(uint32_t duration_ms, void (*task_func)(void), Type time
 }
 
 /**
- * @brief Start the associated timer 
- * 
+ * @brief Start the associated timer
+ *
  * @param current_time - the current time in ms at the time of calling (eg. millis())
  */
 void VirtualTimer::Start(uint32_t current_time)
@@ -69,7 +69,7 @@ void VirtualTimer::Start(uint32_t current_time)
 
 /**
  * @brief Get the current state of the timer (do not update it)
- * 
+ *
  * @param current_time - the current time in ms at the time of calling (eg. millis())
  * @return Current state of the timer
  */
@@ -79,11 +79,11 @@ VirtualTimer::State VirtualTimer::GetTimerState()
 }
 
 /**
- * @brief Check if the timer has expired but do not update it 
- * 
+ * @brief Check if the timer has expired but do not update it
+ *
  * @param current_time - the current time in ms at the time of calling (eg. millis())
- * @return true = timer has exceeded duration 
- * @return false = timer has not exceeded duration 
+ * @return true = timer has exceeded duration
+ * @return false = timer has not exceeded duration
  */
 bool VirtualTimer::HasTimerExpired()
 {
@@ -97,9 +97,9 @@ bool VirtualTimer::HasTimerExpired()
 
 /**
  * @brief Get the time (in ms) that has elapsed since the timer was started
- * 
+ *
  * @param current_time - the current time in ms at the time of calling (eg. millis())
- * @return Elapsed time since timer was started 
+ * @return Elapsed time since timer was started
  */
 uint32_t VirtualTimer::GetElapsedTime(uint32_t current_time)
 {
@@ -108,26 +108,26 @@ uint32_t VirtualTimer::GetElapsedTime(uint32_t current_time)
 }
 
 /**
- * @brief Run the fuction associated with this timer and update prev_tick if it's a repeating timer 
- * 
+ * @brief Run the fuction associated with this timer and update prev_tick if it's a repeating timer
+ *
  * @param current_time - the current time in ms at the time of calling (eg. millis())
- * @return true if the function returned faster than the timer duration 
+ * @return true if the function returned faster than the timer duration
  * @return false if the function pointer is null or task missed an iteration
  */
 bool VirtualTimer::Tick(uint32_t current_time)
 {
     bool ret = true;
 
-    // Only tick a timer if it's already running 
+    // Only tick a timer if it's already running
     if (state == State::kRunning)
     {
-        // Check if timer has expired 
+        // Check if timer has expired
         if (current_time >= prev_tick + duration)
         {
             if (type == Type::kRepeating)
             {
-                // Check if the timer missed a cycle 
-                if (current_time > prev_tick + 2*duration)
+                // Check if the timer missed a cycle
+                if (current_time > prev_tick + 2 * duration)
                 {
                     ret = false;
                 }
@@ -140,36 +140,35 @@ bool VirtualTimer::Tick(uint32_t current_time)
                 state = State::kExpired;
             }
 
-            if (task_func != NULL)
+            if (task_func != nullptr)
             {
                 // Run the associated task function
                 task_func();
             }
-            else 
+            else
             {
                 ret = false;
             }
         }
     }
-    
+
     return ret;
 }
 
 /**
  * @brief Default constructor for VirtualTimerGroup
- * 
+ *
  */
 VirtualTimerGroup::VirtualTimerGroup()
 {
-
 }
 
 /**
- * @brief Add an existing timer to the timer group 
- * 
+ * @brief Add an existing timer to the timer group
+ *
  * @param newTimer = existig timer to be added to the group
  */
-void VirtualTimerGroup::AddTimer(VirtualTimer* new_timer)
+void VirtualTimerGroup::AddTimer(VirtualTimer *new_timer)
 {
     if (timer_group.empty())
     {
@@ -184,16 +183,16 @@ void VirtualTimerGroup::AddTimer(VirtualTimer* new_timer)
 }
 
 /**
- * @brief Create a new timer with the given duration and function and add it to the group 
- * 
- * @param duration = duration between function calls 
- * @param runFunc = function to be run when ticked 
- * @return true = timer was added successfully 
+ * @brief Create a new timer with the given duration and function and add it to the group
+ *
+ * @param duration = duration between function calls
+ * @param runFunc = function to be run when ticked
+ * @return true = timer was added successfully
  * @return false = failed to add timer (likely reached the max number of timers)
  */
-void VirtualTimerGroup::AddTimer(uint32_t duration_ms, void(*task_func)(void))
+void VirtualTimerGroup::AddTimer(uint32_t duration_ms, void (*task_func)(void))
 {
-    VirtualTimer* new_timer = new VirtualTimer;
+    VirtualTimer *new_timer = new VirtualTimer;
 
     new_timer->Init(duration_ms, task_func, VirtualTimer::Type::kRepeating);
 
@@ -211,9 +210,9 @@ void VirtualTimerGroup::AddTimer(uint32_t duration_ms, void(*task_func)(void))
 
 /**
  * @brief Tick all timers in group
- * 
- * @return true if all tasks ran faster than minimum timer duration 
- * @return false if the task loop took longer than the minimum timer duration 
+ *
+ * @return true if all tasks ran faster than minimum timer duration
+ * @return false if the task loop took longer than the minimum timer duration
  * 			(timers may no longer fire at the correct interval)
  */
 bool VirtualTimerGroup::Tick(uint32_t current_time)
@@ -228,14 +227,14 @@ bool VirtualTimerGroup::Tick(uint32_t current_time)
             ret = false;
         }
 
-        std::vector<VirtualTimer>::iterator i; 
+        std::vector<VirtualTimer>::iterator i;
         for (i = timer_group.begin(); i != timer_group.end(); i++)
         {
             if (i->GetTimerState() != VirtualTimer::State::kRunning)
             {
                 i->Start(current_time);
             }
-            
+
             if (i->Tick(current_time) == false)
             {
                 ret = false;
