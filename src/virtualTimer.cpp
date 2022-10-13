@@ -167,14 +167,14 @@ void VirtualTimerGroup::AddTimer(VirtualTimer &new_timer)
 {
     if (timer_group.empty())
     {
-        min_timer_duration = new_timer->duration;
+        min_timer_duration = new_timer.duration;
     }
-    else if (new_timer->duration < min_timer_duration)
+    else if (new_timer.duration < min_timer_duration)
     {
-        min_timer_duration = new_timer->duration;
+        min_timer_duration = new_timer.duration;
     }
 
-    timer_group.push_back(*new_timer);
+    timer_group.push_back(new_timer);
 }
 
 /**
@@ -187,20 +187,12 @@ void VirtualTimerGroup::AddTimer(VirtualTimer &new_timer)
  */
 void VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func)
 {
-    VirtualTimer *new_timer = new VirtualTimer;
-
-    new_timer->Init(duration_ms, task_func, VirtualTimer::Type::kRepeating);
-
-    if (timer_group.empty())
+    if (timer_group.empty() || duration_ms < min_timer_duration)
     {
-        min_timer_duration = new_timer->duration;
-    }
-    else if (new_timer->duration < min_timer_duration)
-    {
-        min_timer_duration = new_timer->duration;
+        min_timer_duration = duration_ms;
     }
 
-    timer_group.push_back(*new_timer);
+    timer_group.push_back(VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
 }
 
 /**
