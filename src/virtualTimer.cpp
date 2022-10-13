@@ -163,7 +163,7 @@ VirtualTimerGroup::VirtualTimerGroup() {}
  *
  * @param newTimer = existig timer to be added to the group
  */
-void VirtualTimerGroup::AddTimer(VirtualTimer *new_timer)
+void VirtualTimerGroup::AddTimer(VirtualTimer &new_timer)
 {
     if (timer_group.empty())
     {
