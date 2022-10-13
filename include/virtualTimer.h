@@ -73,7 +73,7 @@ public:
 private:
     uint32_t prev_tick = 0U;
     uint32_t min_timer_duration;
-    std::vector<VirtualTimer> timer_group;
+    std::vector<VirtualTimer *> timer_group;
 };
 
 #endif

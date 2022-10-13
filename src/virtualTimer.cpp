@@ -174,7 +174,7 @@ void VirtualTimerGroup::AddTimer(VirtualTimer &new_timer)
         min_timer_duration = new_timer.duration;
     }
 
-    timer_group.push_back(new_timer);
+    timer_group.push_back(&new_timer);
 }
 
 /**
@@ -192,7 +192,7 @@ void VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)>
         min_timer_duration = duration_ms;
     }
 
-    timer_group.emplace_back(VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
+    timer_group.emplace_back(new VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
 }
 
 /**
@@ -214,15 +214,15 @@ bool VirtualTimerGroup::Tick(uint32_t current_time)
             ret = false;
         }
 
-        std::vector<VirtualTimer>::iterator i;
+        std::vector<VirtualTimer *>::iterator i;
         for (i = timer_group.begin(); i != timer_group.end(); i++)
         {
-            if (i->GetTimerState() != VirtualTimer::State::kRunning)
+            if ((*i)->GetTimerState() != VirtualTimer::State::kRunning)
             {
-                i->Start(current_time);
+                (*i)->Start(current_time);
             }
 
-            if (i->Tick(current_time) == false)
+            if ((*i)->Tick(current_time) == false)
             {
                 ret = false;
             }
