@@ -95,7 +95,7 @@ If you pass in a single-use timer, it will become a repeating timer.
 
 You do not need to start timers when they are in a timer group. If the timer is not already started, it will be automatically started the first time you tick the group. A timer group is ticked the same way a timer is, by passing the current system time (eg. `millis()`) to the tick member function of the group. Eg:
 
-`timer_group.Tick();`
+`timer_group.Tick(millis());`
 
 ## Timing Violations
 While the below behavior is not necessary to use or understand to use the library, it may be helpful depending on your application. In particular, all tick function calls will return a bool indicating if timing violations are occuring. Particularly, a virtual timer returning false indicates that the duration between the last tick of the function and the current tick of the function is greater than 2x the duration of the timer. This means that the timer is not executing the given function at the desired speed and may not behave as intended. For a timer group, the minimum timer duration is stored in memory, and if the tick function for the group takes longer to return than the minimum timer duration, it returns false. Similar to an indivudal timer, this indicates that one or more timers in the timer group will not be executing at their desired frequency due to slowed execution elsewhere in the code. 
