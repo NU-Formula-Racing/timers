@@ -1,4 +1,4 @@
-#ifndef NATIVE
+#ifdef ARDUINO
 #include <Arduino.h>
 
 #include "virtualTimer.h"
