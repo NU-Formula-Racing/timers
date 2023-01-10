@@ -1,3 +1,4 @@
+#ifdef ARDUINO
 #include <Arduino.h>
 
 #include "virtualTimer.h"
@@ -36,3 +37,4 @@ void loop()
         Serial.println("Timing Violation");
     }
 }
+#endif
