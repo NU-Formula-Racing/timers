@@ -49,7 +49,10 @@ public:
     bool HasTimerExpired();
     uint32_t GetElapsedTime(uint32_t current_time);
     void Disable() { state = State::kDisabled; }
-    void Enable() { state = State::kNotStarted; }
+    void Enable()
+    {
+        if (state == State::kDisabled) state = State::kNotStarted;
+    }
     bool Tick(uint32_t current_time);
 
     /********** VARIABLES **********/
