@@ -185,7 +185,7 @@ void VirtualTimerGroup::AddTimer(VirtualTimer &new_timer)
  * @return true = timer was added successfully
  * @return false = failed to add timer (likely reached the max number of timers)
  */
-void VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func)
+VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func)
 {
     if (timer_group.empty() || duration_ms < min_timer_duration)
     {
@@ -193,6 +193,7 @@ void VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)>
     }
 
     timer_group.emplace_back(new VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kRepeating));
+    return timer_group.back();
 }
 
 /**

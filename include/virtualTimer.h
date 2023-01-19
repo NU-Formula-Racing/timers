@@ -73,7 +73,7 @@ public:
     /********** PROTOTYPES **********/
     VirtualTimerGroup();
     void AddTimer(VirtualTimer &new_timer);
-    void AddTimer(uint32_t duration_ms, std::function<void(void)> task_func);
+    VirtualTimer *AddTimer(uint32_t duration_ms, std::function<void(void)> task_func);
     bool Tick(uint32_t current_time);
 
 private:
