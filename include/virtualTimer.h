@@ -30,6 +30,7 @@ public:
         kNotStarted,
         kRunning,
         kExpired,
+        kDisabled,
     };
 
     enum class Type
@@ -47,6 +48,8 @@ public:
     State GetTimerState();
     bool HasTimerExpired();
     uint32_t GetElapsedTime(uint32_t current_time);
+    void Disable() { state = State::kDisabled; }
+    void Enable() { state = State::kNotStarted; }
     bool Tick(uint32_t current_time);
 
     /********** VARIABLES **********/

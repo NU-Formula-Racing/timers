@@ -217,7 +217,8 @@ bool VirtualTimerGroup::Tick(uint32_t current_time)
         std::vector<VirtualTimer *>::iterator i;
         for (i = timer_group.begin(); i != timer_group.end(); i++)
         {
-            if ((*i)->GetTimerState() != VirtualTimer::State::kRunning)
+            if ((*i)->GetTimerState() != VirtualTimer::State::kRunning
+                && (*i)->GetTimerState() != VirtualTimer::State::kDisabled)
             {
                 (*i)->Start(current_time);
             }
