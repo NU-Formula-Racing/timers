@@ -40,6 +40,50 @@ VirtualTimer::VirtualTimer(uint32_t duration_ms, std::function<void(void)> task_
 }
 
 /**
+ * @brief Construct a new Virtual Timer:: Virtual Timer object
+ *
+ * @param duration_ms - Duration the timer should fire after
+ * @param task_func - Function to be called when timer expires
+ * @param timer_type - If the timer should be repeating or single-use
+ * @param max_duration_ms - Maximum duration to run the timer
+ */
+VirtualTimer::VirtualTimer(uint32_t duration_ms,
+                           std::function<void(void)> task_func,
+                           Type timer_type,
+                           uint32_t max_duration_ms)
+{
+    if (duration_ms != 0U)
+    {
+        duration = duration_ms;
+        this->task_func = task_func;
+        type = timer_type;
+        max_calls = static_cast<uint32_t>(max_duration_ms / duration_ms);
+    }
+}
+
+/**
+ * @brief Construct a new Virtual Timer:: Virtual Timer object
+ *
+ * @param duration_ms - Duration the timer should fire after
+ * @param task_func - Function to be called when timer expires
+ * @param timer_type - If the timer should be repeating or single-use
+ * @param max_calls - Maximum number of times to call the timer
+ */
+VirtualTimer::VirtualTimer(uint32_t duration_ms,
+                           std::function<void(void)> task_func,
+                           Type timer_type,
+                           uint32_t max_calls)
+{
+    if (duration_ms != 0U)
+    {
+        duration = duration_ms;
+        this->task_func = task_func;
+        type = timer_type;
+        max_calls = max_calls;
+    }
+}
+
+/**
  * @brief Constructor duplicate for times when we can't use a parametrized constructor
  *
  * @param duration_ms - Duration the timer should fire after
@@ -121,7 +165,7 @@ bool VirtualTimer::Tick(uint32_t current_time)
         // Check if timer has expired
         if (current_time >= prev_tick + duration)
         {
-            if (type == Type::kRepeating)
+            if (type == Type::kRepeating || type == Type::kFiniteUse)
             {
                 // Check if the timer missed a cycle
                 if (current_time > prev_tick + 2 * duration)
@@ -135,6 +179,16 @@ bool VirtualTimer::Tick(uint32_t current_time)
             {
                 // Timer isn't repeating, so it expires
                 state = State::kExpired;
+            }
+
+            if (type == Type::kFiniteUse)
+            {
+                call_counter += 1;
+                // If we reach maximum number of calls, timer expires
+                if (call_counter > max_calls)
+                {
+                    state = State::kExpired;
+                }
             }
 
             if (task_func != nullptr)
