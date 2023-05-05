@@ -11,8 +11,6 @@
 
 #include "virtualTimer.h"
 
-#include <Arduino.h>
-
 /**
  * @brief Default constructor for VirtualTimer object
  *
