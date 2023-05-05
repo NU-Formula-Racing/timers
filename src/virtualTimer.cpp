@@ -11,6 +11,8 @@
 
 #include "virtualTimer.h"
 
+#include <Arduino.h>
+
 /**
  * @brief Default constructor for VirtualTimer object
  *
@@ -45,41 +47,20 @@ VirtualTimer::VirtualTimer(uint32_t duration_ms, std::function<void(void)> task_
  * @param duration_ms - Duration the timer should fire after
  * @param task_func - Function to be called when timer expires
  * @param timer_type - If the timer should be repeating or single-use
- * @param max_duration_ms - Maximum duration to run the timer
- */
-VirtualTimer::VirtualTimer(uint32_t duration_ms,
-                           std::function<void(void)> task_func,
-                           Type timer_type,
-                           uint32_t max_duration_ms)
-{
-    if (duration_ms != 0U)
-    {
-        duration = duration_ms;
-        this->task_func = task_func;
-        type = timer_type;
-        max_calls = static_cast<uint32_t>(max_duration_ms / duration_ms);
-    }
-}
-
-/**
- * @brief Construct a new Virtual Timer:: Virtual Timer object
- *
- * @param duration_ms - Duration the timer should fire after
- * @param task_func - Function to be called when timer expires
- * @param timer_type - If the timer should be repeating or single-use
  * @param max_calls - Maximum number of times to call the timer
  */
 VirtualTimer::VirtualTimer(uint32_t duration_ms,
                            std::function<void(void)> task_func,
                            Type timer_type,
-                           uint32_t max_calls)
+                           uint16_t max_calls)
 {
     if (duration_ms != 0U)
     {
         duration = duration_ms;
         this->task_func = task_func;
         type = timer_type;
-        max_calls = max_calls;
+        maximum_calls = max_calls;
+        call_counter = 0;
     }
 }
 
@@ -158,7 +139,6 @@ uint32_t VirtualTimer::GetElapsedTime(uint32_t current_time)
 bool VirtualTimer::Tick(uint32_t current_time)
 {
     bool ret = true;
-
     // Only tick a timer if it's already running
     if (state == State::kRunning)
     {
@@ -185,7 +165,7 @@ bool VirtualTimer::Tick(uint32_t current_time)
             {
                 call_counter += 1;
                 // If we reach maximum number of calls, timer expires
-                if (call_counter > max_calls)
+                if (call_counter >= maximum_calls)
                 {
                     state = State::kExpired;
                 }
@@ -250,6 +230,17 @@ VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<vo
     return timer_group.back();
 }
 
+VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func, uint16_t max_calls)
+{
+    if (timer_group.empty() || duration_ms < min_timer_duration)
+    {
+        min_timer_duration = duration_ms;
+    }
+
+    timer_group.emplace_back(new VirtualTimer(duration_ms, task_func, VirtualTimer::Type::kFiniteUse, max_calls));
+    return timer_group.back();
+}
+
 /**
  * @brief Tick all timers in group
  *
@@ -272,8 +263,7 @@ bool VirtualTimerGroup::Tick(uint32_t current_time)
         std::vector<VirtualTimer *>::iterator i;
         for (i = timer_group.begin(); i != timer_group.end(); i++)
         {
-            if ((*i)->GetTimerState() != VirtualTimer::State::kRunning
-                && (*i)->GetTimerState() != VirtualTimer::State::kDisabled)
+            if ((*i)->GetTimerState() == VirtualTimer::State::kNotStarted)
             {
                 (*i)->Start(current_time);
             }
