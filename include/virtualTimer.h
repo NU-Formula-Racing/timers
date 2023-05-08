@@ -44,7 +44,7 @@ public:
     /********** PROTOTYPES **********/
     VirtualTimer();
     VirtualTimer(uint32_t duration_ms, std::function<void(void)> task_func, Type timer_type);
-    VirtualTimer(uint32_t duration_ms, std::function<void(void)> task_func, Type timer_type, uint32_t max_calls);
+    VirtualTimer(uint32_t duration_ms, std::function<void(void)> task_func, Type timer_type, uint16_t max_calls);
     void Init(uint32_t duration_ms, std::function<void(void)> task_func, Type timer_type);
     void Start(uint32_t current_time);
     State GetTimerState();
