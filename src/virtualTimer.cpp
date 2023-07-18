@@ -9,7 +9,7 @@
  *
  */
 
-#include "virtualTimer.h"
+#include "../include/virtualTimer.h"
 
 /**
  * @brief Default constructor for VirtualTimer object
@@ -228,7 +228,7 @@ VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<vo
     return timer_group.back();
 }
 
-VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func, uint32_t max_calls)
+VirtualTimer *VirtualTimerGroup::AddTimer(uint32_t duration_ms, std::function<void(void)> task_func, uint16_t max_calls)
 {
     if (timer_group.empty() || duration_ms < min_timer_duration)
     {
